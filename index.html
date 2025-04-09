@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dordle - A Dual Word Puzzle Game | Play Two Wordle Games at Once</title>
+    <meta name="description" content="Play Dordle, an exciting dual-word variant of Wordle where you solve two word puzzles simultaneously. Perfect for word game enthusiasts looking for an extra challenge!">
+    <meta name="keywords" content="dordle, wordle, word game, puzzle game, dual word puzzle, daily word game, word puzzle, brain game">
+    <meta property="og:title" content="Dordle - A Dual Word Puzzle Game">
+    <meta property="og:description" content="Challenge yourself with Dordle - solve two word puzzles simultaneously in this exciting variant of Wordle.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/igames/dordle">
+    <link rel="canonical" href="https://yourdomain.com/igames/dordle">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* 移动端优化 */
+        @media (max-width: 640px) {
+            .text-4xl {
+                font-size: 1.875rem;
+            }
+            .p-8 {
+                padding: 1.5rem;
+            }
+            .game-container {
+                height: calc(100dvh - 12rem);
+            }
+        }
+        
+        /* 提升可访问性 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* 自定义滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 游戏容器样式 */
+        .game-container {
+            background: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* 键盘按键样式 */
+        .keyboard-key {
+            aspect-ratio: 1;
+            transition: all 0.2s ease;
+        }
+
+        .keyboard-key:hover {
+            transform: translateY(-1px);
+        }
+
+        /* 加载动画 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen bg-gray-50 py-3">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <!-- Game Container -->
+            <div class="w-full flex flex-col items-center">
+                <div class="w-full relative max-w-3xl md:aspect-[4/4] h-[calc(100dvh-12rem)] md:h-auto mt-2 game-container">
+                    <div id="game-loading" class="absolute inset-0 flex items-center justify-center bg-white rounded-lg">
+                        <div class="loading text-2xl text-gray-600">Loading game...</div>
+                    </div>
+                    <iframe
+                        id="game-frame"
+                        title="Dordle Game"
+                        src="https://dordlegame.io/dordle.embed"
+                        class="absolute top-0 left-0 w-full h-full border-0 rounded-lg"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        onload="document.getElementById('game-loading').style.display='none';"
+                    ></iframe>
+                </div>
+            </div>
+
+            <!-- Intro Section -->
+            <div class="mt-12 flex flex-col items-center px-4 sm:px-6 lg:px-8">
+                <!-- Header Section -->
+                <div class="w-full max-w-4xl text-center space-y-4 sm:space-y-8 mb-8 sm:mb-12">
+                    <h1 class="text-4xl sm:text-5xl font-bold text-gray-900">Dordle</h1>
+                    <p class="text-sm sm:text-base text-gray-600">
+                        Dordle is a dual-word variant of Wordle, maintaining the same gameplay while adding a unique challenge. 
+                        Unlike traditional Wordle where you guess one word at a time, in Dordle, players must guess two words 
+                        simultaneously. This innovative approach makes the game more challenging and engaging.
+                    </p>
+                </div>
+
+                <!-- Main Content -->
+                <div class="max-w-6xl w-full space-y-10">
+                    <div class="bg-white p-4 sm:p-8 lg:p-12 rounded-xl shadow-md border border-gray-100">
+                        <!-- How to Play -->
+                        <section class="mb-16">
+                            <h2 class="text-2xl font-bold mb-6 text-center">How to Play</h2>
+                            <div class="bg-white rounded-xl shadow-sm p-8">
+                                <div class="space-y-8">
+                                    <!-- Step 1 -->
+                                    <div class="space-y-6">
+                                        <div class="bg-gray-50 p-6 rounded-lg">
+                                            <div class="flex items-center gap-4 mb-4">
+                                                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                                                    1
+                                                </div>
+                                                <h3 class="text-xl font-semibold">Enter Your Guess</h3>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                Use the keyboard to enter a five-letter word. This word will be applied to both puzzles simultaneously.
+                                            </p>
+                                        </div>
+
+                                        <div class="bg-white shadow-sm rounded-lg p-6">
+                                            <div class="flex justify-center mb-4">
+                                                <div class="grid grid-cols-5 gap-0.5 sm:gap-1">
+                                                    <!-- Word Example: FIRST -->
+                                                    <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">F</div>
+                                                    <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 bg-yellow-400 border-yellow-400 text-white font-bold text-base sm:text-xl">I</div>
+                                                    <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">R</div>
+                                                    <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">S</div>
+                                                    <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 bg-green-400 border-green-400 text-white font-bold text-base sm:text-xl">T</div>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-500 text-center">Example: Entering the word "FIRST"</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 2 -->
+                                    <div class="space-y-6">
+                                        <div class="bg-gray-50 p-6 rounded-lg">
+                                            <div class="flex items-center gap-4 mb-4">
+                                                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                                                    2
+                                                </div>
+                                                <h3 class="text-xl font-semibold">Check Feedback</h3>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                After each guess, letters are color-coded: green for correct position, yellow for correct letter but wrong position, 
+                                                and gray for letters not in the word. Since you're guessing two words simultaneously, the same letter might show 
+                                                different states in the left and right puzzles.
+                                            </p>
+                                        </div>
+
+                                        <div class="bg-white shadow-sm rounded-lg p-6">
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                                <!-- Left Puzzle -->
+                                                <div class="bg-gray-50 p-2 sm:p-4 rounded-lg">
+                                                    <p class="text-xs sm:text-sm text-gray-500 mb-2">Left Puzzle</p>
+                                                    <div class="grid grid-cols-5 gap-0.5 sm:gap-1">
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">F</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 bg-yellow-400 border-yellow-400 text-white font-bold text-base sm:text-xl">I</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 bg-green-400 border-green-400 text-white font-bold text-base sm:text-xl">R</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">S</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">T</div>
+                                                    </div>
+                                                </div>
+                                                <!-- Right Puzzle -->
+                                                <div class="bg-gray-50 p-2 sm:p-4 rounded-lg">
+                                                    <p class="text-xs sm:text-sm text-gray-500 mb-2">Right Puzzle</p>
+                                                    <div class="grid grid-cols-5 gap-0.5 sm:gap-1">
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">F</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">I</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 bg-yellow-400 border-yellow-400 text-white font-bold text-base sm:text-xl">R</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 border-gray-300 font-bold text-base sm:text-xl">S</div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center border-2 bg-green-400 border-green-400 text-white font-bold text-base sm:text-xl">T</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-500 mt-4 text-center">
+                                                Example: Letter "R" is green (correct position) on the left, yellow (exists but wrong position) on the right
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 3 -->
+                                    <div class="space-y-6">
+                                        <div class="bg-gray-50 p-6 rounded-lg">
+                                            <div class="flex items-center gap-4 mb-4">
+                                                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                                                    3
+                                                </div>
+                                                <h3 class="text-xl font-semibold">Keyboard Status</h3>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                Each key on the keyboard is split into left and right halves, corresponding to the letter's status in both puzzles. 
+                                                Green indicates correct position, yellow shows correct letter but wrong position, and gray means the letter isn't in 
+                                                the word. By observing the keyboard status, you can quickly understand each letter's situation in both puzzles.
+                                            </p>
+                                        </div>
+
+                                        <div class="bg-white shadow-sm rounded-lg p-6">
+                                            <div class="bg-gray-50 p-4 rounded-lg">
+                                                <div class="flex flex-col items-center gap-0.5 sm:gap-1">
+                                                    <!-- First row Q-P -->
+                                                    <div class="flex gap-0.5 sm:gap-1">
+                                                        <!-- Q -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">Q</div>
+                                                        </div>
+                                                        <!-- W -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">W</div>
+                                                        </div>
+                                                        <!-- E -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">E</div>
+                                                        </div>
+                                                        <!-- R with special coloring -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">R</div>
+                                                            <div class="absolute inset-y-0 left-0 w-1/2 bg-green-400"></div>
+                                                            <div class="absolute inset-y-0 right-0 w-1/2 bg-yellow-400"></div>
+                                                        </div>
+                                                        <!-- T with special coloring -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">T</div>
+                                                            <div class="absolute inset-y-0 left-0 w-1/2 bg-gray-400"></div>
+                                                            <div class="absolute inset-y-0 right-0 w-1/2 bg-green-400"></div>
+                                                        </div>
+                                                        <!-- Y -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">Y</div>
+                                                        </div>
+                                                        <!-- U -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">U</div>
+                                                        </div>
+                                                        <!-- I with special coloring -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">I</div>
+                                                            <div class="absolute inset-y-0 left-0 w-1/2 bg-yellow-400"></div>
+                                                            <div class="absolute inset-y-0 right-0 w-1/2 bg-gray-400"></div>
+                                                        </div>
+                                                        <!-- O -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">O</div>
+                                                        </div>
+                                                        <!-- P -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">P</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Second row A-L -->
+                                                    <div class="flex gap-0.5 sm:gap-1">
+                                                        <!-- A -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">A</div>
+                                                        </div>
+                                                        <!-- S with gray background -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">S</div>
+                                                            <div class="absolute inset-0 bg-gray-400"></div>
+                                                        </div>
+                                                        <!-- D -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">D</div>
+                                                        </div>
+                                                        <!-- F with gray background -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">F</div>
+                                                            <div class="absolute inset-0 bg-gray-400"></div>
+                                                        </div>
+                                                        <!-- G through L -->
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">G</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">H</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">J</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">K</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">L</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Third row Z-M -->
+                                                    <div class="flex gap-0.5 sm:gap-1">
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">Z</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">X</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">C</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">V</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">B</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">N</div>
+                                                        </div>
+                                                        <div class="w-8 h-8 sm:w-12 sm:h-12 relative border border-gray-300 overflow-hidden">
+                                                            <div class="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-base z-10">M</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-600 mt-4">
+                                                Example: Letter R's left half is green (correct position in left puzzle), right half is yellow (exists but wrong position in right puzzle).
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step 4 -->
+                                    <div class="space-y-6">
+                                        <div class="bg-gray-50 p-6 rounded-lg">
+                                            <div class="flex items-center gap-4 mb-4">
+                                                <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                                                    4
+                                                </div>
+                                                <h3 class="text-xl font-semibold">Continue Guessing</h3>
+                                            </div>
+                                            <p class="text-gray-600">
+                                                Continue guessing based on the color hints. You have 7 chances to find both correct words. Pay special attention 
+                                                to how each letter appears differently in the two puzzles, as this will help you find the answers faster. Focus on 
+                                                confirmed positions (green) while keeping track of letters that exist but are in wrong positions (yellow).
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-8 bg-indigo-50 rounded-lg p-4">
+                                    <div class="flex items-center gap-2 text-indigo-600 font-medium mb-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Game Tips
+                                    </div>
+                                    <p class="text-gray-600">
+                                        Try starting with words containing common letters (like "STARE", "CRANE") to quickly gather more useful information.
+                                        Remember that the same letter might show different colors in the two puzzles!
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Game Modes -->
+                        <section class="mb-16">
+                            <h2 class="text-2xl font-bold mb-6 text-center">Game Modes</h2>
+                            <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
+                                    <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-xl font-bold text-gray-800">Daily Challenge</h3>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <p class="text-gray-600">A new pair of puzzles every day, synchronized for players worldwide.</p>
+                                            <ul class="text-gray-600 space-y-2">
+                                                <li class="flex items-center">
+                                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    Play with global players
+                                                </li>
+                                                <li class="flex items-center">
+                                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    Share and compare scores
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-xl font-bold text-gray-800">Free Practice</h3>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <p class="text-gray-600">Start a new challenge anytime with randomly generated word pairs.</p>
+                                            <ul class="text-gray-600 space-y-2">
+                                                <li class="flex items-center">
+                                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    Unlimited practice
+                                                </li>
+                                                <li class="flex items-center">
+                                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    Improve your skills
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Game Strategy -->
+                        <section class="mb-16">
+                            <h2 class="text-2xl font-bold mb-6">Game Strategy</h2>
+                            <div class="space-y-4 text-gray-700">
+                                <p class="leading-relaxed">
+                                    The key to success lies in how cleverly you use each guess to gather information for both puzzles. 
+                                    The virtual keyboard's color indicators will help you track the status of each letter across both puzzles.
+                                </p>
+                                <p class="leading-relaxed">
+                                    Start with high-frequency letter combinations to quickly narrow down the possible word range. Remember, 
+                                    each input applies to both puzzles, so pay special attention to analyzing how each letter appears in the 
+                                    different puzzles.
+                                </p>
+                            </div>
+                        </section>
+
+                        <!-- FAQ Section -->
+                        <section class="mb-16">
+                            <h2 class="text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
+                            <div class="space-y-2 sm:space-y-4">
+                                <!-- Question 1 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        What's the difference between Dordle and Wordle?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        Dordle is a dual-word variant of Wordle. The main differences are:
+                                        <br />• You need to guess two different words simultaneously
+                                        <br />• Each guess applies to both puzzles
+                                        <br />• You get 7 attempts (one more than Wordle)
+                                        <br />• The keyboard is split in half, showing letter states for both puzzles
+                                    </div>
+                                </div>
+
+                                <!-- Question 2 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        Why are the keyboard letters split in two colors?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        Since you're solving two puzzles simultaneously, the same letter might have different states in each puzzle. The left half of each key shows the letter's state in the left puzzle, while the right half shows its state in the right puzzle, helping you track each letter's status across both puzzles.
+                                    </div>
+                                </div>
+
+                                <!-- Question 3 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        Can both puzzles have the same answer?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        No. The two puzzles always have different answers. This ensures the game remains challenging and prevents players from automatically solving the second puzzle after finding the first answer.
+                                    </div>
+                                </div>
+
+                                <!-- Question 4 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        What's the best starting strategy?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        Since you're solving two puzzles at once, choosing a word with common letters for your first guess is crucial. Try words containing multiple vowels and common consonants, like "STARE" or "CRANE". This helps gather useful information for both puzzles quickly.
+                                    </div>
+                                </div>
+
+                                <!-- Question 5 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        How do repeated letters work in both puzzles?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        Each puzzle independently shows the status of letters. For example, if your guess contains repeated letters, these letters might show different colors in each puzzle. Pay attention to the keyboard's color indicators, as they help you track each letter's status across both puzzles.
+                                    </div>
+                                </div>
+
+                                <!-- Question 6 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        Why do we get 7 attempts instead of 6?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        Since you're solving two puzzles simultaneously, the game provides an extra attempt. This helps balance the difficulty and gives players a better chance to focus on the remaining puzzle after solving one.
+                                    </div>
+                                </div>
+
+                                <!-- Question 7 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        How should I divide my attention between the two puzzles?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        It's recommended to monitor both puzzles but prioritize the one with more clues. If one puzzle has multiple green letters (correct positions), consider focusing on solving that one first. Remember that each guess affects both puzzles, so consider the impact on both sides when making your choices.
+                                    </div>
+                                </div>
+
+                                <!-- Question 8 -->
+                                <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 p-3 sm:p-4 pb-2">
+                                        There's no time limit?
+                                    </h3>
+                                    <div class="text-sm sm:text-base text-gray-600 px-3 sm:px-4 pb-3 sm:pb-4">
+                                        No, there's no time limit. You can take as long as you need to think about each guess. However, remember that you only have 7 attempts to solve both puzzles, so choose your guesses carefully!
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
